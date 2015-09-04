@@ -82,6 +82,25 @@ func NewClient(authToken string) *Client {
 	return c
 }
 
+// NewClient returns a new HipChat API client for custom url, not default hipchat one.
+// You must provide URl of hipchat server and a valid AuthToken retrieved from your HipChat account.
+func NewCustomClient(hipchatURL string, authToken string) *Client {
+	baseURL, err := url.Parse(hipchatURL)
+	if err != nil {
+		panic(err)
+	}
+
+	c := &Client{
+		authToken: authToken,
+		BaseURL:   baseURL,
+		client:    http.DefaultClient,
+	}
+	c.Room = &RoomService{client: c}
+	c.User = &UserService{client: c}
+	c.Emoticon = &EmoticonService{client: c}
+	return c
+}
+
 // NewRequest creates an API request. This method can be used to performs
 // API request not implemented in this library. Otherwise it should not be
 // be used directly.
